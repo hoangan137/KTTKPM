@@ -4,6 +4,7 @@ using ASC.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using ASC.Utilities;
 
 namespace ASC.Web.Controllers
 {
@@ -14,18 +15,26 @@ namespace ASC.Web.Controllers
         private readonly IEmailSender _emailSender;
 
         public HomeController(
-            ILogger<HomeController> logger,
-            IOptions<ApplicationSettings> settings,
-            IEmailSender emailSender)
+            //ILogger<HomeController> logger,
+            IOptions<ApplicationSettings> settings)
+        //,IEmailSender emailSender)
         {
-            _logger = logger;
+            //_logger = logger;
             _settings = settings;
-            _emailSender = emailSender;
+            //_emailSender = emailSender;
         }
 
         public IActionResult Index()
         {
-            ViewBag.Title = _settings.Value.ApplicationTitle;
+            HttpContext.Session.SetSession("Test", _settings.Value);
+
+            // Get Session
+            var settings = HttpContext.Session.GetSession<ApplicationSettings>("Test");
+
+            // Usage of IOptions
+            ViewBag.Title = settings.ApplicationTitle;
+
+
             return View();
         }
 
