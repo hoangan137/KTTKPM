@@ -1,4 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -17,7 +18,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ASC.Web.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         //private readonly SignInManager<IdentityUser> _signInManager;
@@ -68,7 +68,8 @@ namespace ASC.Web.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
-            /// <summary>///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+            /// <summary>
+            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
@@ -110,24 +111,40 @@ namespace ASC.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
-
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            //returnUrl = returnUrl ?? Url.Content("~/");
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return Page();
+                }
+
+                var list = await _userManager.GetClaimsAsync(user);
+                var isActive = Boolean.Parse(list.SingleOrDefault(p => p.Type == "IsActive").Value);
+                if (!isActive)
+                {
+                    ModelState.AddModelError(string.Empty, "Account has been locked.");
+                    return Page();
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    _logger.LogInformation(1, "User logged in.");
+                    if (!String.IsNullOrWhiteSpace(returnUrl))
+                        return RedirectToAction(returnUrl);
+                    else
+                        return RedirectToAction("Dashboard", "Dashboard");
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");

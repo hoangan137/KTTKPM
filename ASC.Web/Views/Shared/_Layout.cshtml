@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     Layout = "_MasterLayout";
 }
 
@@ -9,12 +9,12 @@
                 <img class="responsive-img" src="~/images/hinh1.jpeg" alt="logo" />
             </a>
             <ul class="right hide-on-med-and-down">
-                <a href="/Identity/Account/Login">Login</a>
+                <li><a href="/Identity/Account/Login">Login</a></li>
 
                 <li><a href="#">Contact</a></li>
             </ul>
             <ul id="nav-mobile" class="sidenav">
-                <a href="/Identity/Account/Login">Login</a>
+                <li><a href="/Identity/Account/Login">Login</a></li>
 
                 <li><a href="#">Contact</a></li>
             </ul>
@@ -98,5 +98,5 @@
     </div>
 </footer>
 @section Scripts {
-    @RenderSection("Scripts",required : false)
+    @RenderSection("Scripts", required: false)
 }

@@ -1,4 +1,4 @@
-﻿@using Microsoft.Extensions.Options
+﻿﻿@using Microsoft.Extensions.Options
 @using ASC.Web.Configuration
 @inject IOptions<ApplicationSettings> _configurationSettings
 
@@ -10,7 +10,7 @@
     <title>@_configurationSettings.Value.ApplicationTitle</title>
 
     <!-- CSS -->
-   
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="~/css/materialize.css" type="text/css" rel="stylesheet" media="screen, projection" />
     <link href="~/css/style.css" type="text/css" rel="stylesheet" media="screen, projection" />
@@ -33,5 +33,6 @@
         });
     </script>
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>
