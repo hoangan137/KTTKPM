@@ -8,11 +8,11 @@ using ASC.Utilities;
 
 namespace ASC.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : AnonymousController
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IOptions<ApplicationSettings> _settings;
-        private readonly IEmailSender _emailSender;
+        
+        private  IOptions<ApplicationSettings> _settings;
+       
 
         public HomeController(
             //ILogger<HomeController> logger,
@@ -32,26 +32,27 @@ namespace ASC.Web.Controllers
             var settings = HttpContext.Session.GetSession<ApplicationSettings>("Test");
 
             // Usage of IOptions
-            ViewBag.Title = settings.ApplicationTitle;
+            ViewBag.Title = _settings.Value.ApplicationTitle;
 
-
+            
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult About()
         {
+            ViewData["Message"] = "Your application description page.";
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Contact()
+        {
+            ViewData["Message"] = "Your contact page.";
+            return View();
+        }
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var model = new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier };
+            return View(model);
         }
 
-        public IActionResult Dashboard()
-        {
-            return View();
-        }
     }
 }
