@@ -1,13 +1,16 @@
-﻿﻿@using Microsoft.AspNetCore.Http
-@using ASC.Utilities
+﻿﻿@using ASC.Utilities
+@using ASC.Web.Data
+@*lay thong tin user dang nhap*@
 @inject IHttpContextAccessor UserHttpContext
-@using ASC.Utilities
+@*Lay menu*@
+@inject INavigationCacheOperations navigationCache
 @{
     Layout = "_MasterLayout";
+    // var currentUser = User.GetCurrentUserDetails();
+    var currentUser = UserHttpContext.HttpContext.User.GetCurrentUserDetails();
+
 }
-@{
-    var currentUser = User.GetCurrentUserDetails();
-}
+
 <header class="secureLayout">
     <nav class="top-nav blue-grey lighten-1">
         <div class="nav-wrapper row valign-wrapper">
@@ -22,31 +25,33 @@
         <li>
             <div class="user-view">
                 <div class="background blue-grey lighten-1"></div>
-                <a href="#!user"><img class="circle" src="~/images/background1.jpg"></a>
+                <a href="#!user"><img class="circle" src="~/images/avatar.jpg"></a>
                 <a href="#!name"><span class="white-text name">@currentUser.Name</span></a>
                 <a href="#!email"><span class="white-text email">@currentUser.Email</span></a>
             </div>
         </li>
+        @await Component.InvokeAsync("ASC.Web.Navigation.LeftNavigation", await navigationCache.GetNavigationCacheAsync())
+
         <li>
             <a class="collapsible-header" href="#!">
                 <i class="material-icons">dashboard</i>
                 Dashboard
             </a>
         </li>
-        @* <li>
-        <ul class="collapsible collapsible-accordion">
         <li>
-        <a class="collapsible-header">User Administration <i class="material-icons">supervisor_account</i></a>
-        <div class="collapsible-body">
-        <ul>
-        <li><a href="#!">Customers<i class="material-icons">account_box</i></a></li>
-        <li><a href="#!">Provision User<i class="material-icons">person_add</i></a></li>
-        <li><a href="#!">Deactivate User<i class="material-icons">remove_circle</i></a></li>
-        </ul>
-        </div>
+            <ul class="collapsible collapsible-accordion">
+                <li>
+                    <a class="collapsible-header">User Administration <i class="material-icons">supervisor_account</i></a>
+                    <div class="collapsible-body">
+                        <ul>
+                            <li><a href="#!">Customers<i class="material-icons">account_box</i></a></li>
+                            <li><a href="#!">Provision User<i class="material-icons">person_add</i></a></li>
+                            <li><a href="#!">Deactivate User<i class="material-icons">remove_circle</i></a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
         </li>
-        </ul>
-        </li> *@
         <li>
             <ul class="collapsible collapsible-accordion">
                 <li>
@@ -88,16 +93,20 @@
                 Settings
             </a>
         </li>
+        <!-- revise here-->
         <li>
             <a class="collapsible-header" href="#!" id="ancrLogout">
                 <i class="material-icons">
                     exit_to_app
-                </i>Logout
+                </i>
+                Logout
             </a>
         </li>
+        <!-- End -->
         <form class="hide" method="post" id="logout_form" asp-area="Identity" asp-page="/Account/Logout">
             <input type="submit" value="Logout" />
         </form>
+        <form class="hide" method="post" id="resetPassword_form" asp-area="Identity" asp-page="/Account/InitiateResetPassword"></form>
     </ul>
 </header>
 
@@ -149,9 +158,7 @@
         </div>
     </div>
 </footer>
-@* @section Scripts {
-    @RenderSection("Scripts", required: false)
-} *@
+<!--Lab 4-->
 @section Scripts {
     @RenderSection("Scripts", required: false)
     <script type="text/javascript">
@@ -159,7 +166,11 @@
             $('#ancrLogout').click(function () {
                 $('#logout_form').submit();
             });
+            $('#ancrResetPassword').click(function () {
+                $('#resetPassword_form').submit();
+            });
         });
+
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -167,3 +178,5 @@
         });
     </script>
 }
+
+@RenderSection("Scripts", required: false)

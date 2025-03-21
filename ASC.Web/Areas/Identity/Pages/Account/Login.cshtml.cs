@@ -1,5 +1,4 @@
-﻿
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -94,17 +93,17 @@ namespace ASC.Web.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            //if (!string.IsNullOrEmpty(ErrorMessage))
-            //{
-            //    ModelState.AddModelError(string.Empty, ErrorMessage);
-            //}
+            if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                ModelState.AddModelError(string.Empty, ErrorMessage);
+            }
 
-            //returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             //// Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            //ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
         }
@@ -137,7 +136,7 @@ namespace ASC.Web.Areas.Identity.Pages.Account
                     if (!String.IsNullOrWhiteSpace(returnUrl))
                         return RedirectToAction(returnUrl);
                     else
-                        return RedirectToAction("Dashboard", "Dashboard");
+                        return RedirectToAction("Dashboard", "Dashboard", new {area= "ServiceRequests"});
                 }
 
                 if (result.RequiresTwoFactor)

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using NPOI.SS.Formula.Functions;
 
 namespace ASC.Web.Areas.Identity.Pages.Account
 {
@@ -71,20 +73,29 @@ namespace ASC.Web.Areas.Identity.Pages.Account
 
         }
 
-        public IActionResult OnGet(string code = null)
+        public IActionResult OnGet(string code = null, string email = null)
         {
-            if (code == null)
+            if (string.IsNullOrEmpty(code))
             {
                 return BadRequest("A code must be supplied for password reset.");
             }
-            else
+
+            try
             {
-                Input = new InputModel
-                {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
-                };
+                var decodedBytes = WebEncoders.Base64UrlDecode(code);
+                var decodedCode = Encoding.UTF8.GetString(decodedBytes);
+
+                Console.WriteLine($"Decoded Token: {decodedCode}");
+
+                Input = new InputModel { Code = decodedCode, Email = email };
                 return Page();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Token decoding error: {ex.Message}");
+                return BadRequest("Invalid reset password token.");
+            }
+
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -93,7 +104,6 @@ namespace ASC.Web.Areas.Identity.Pages.Account
             {
                 return Page();
             }
-
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
