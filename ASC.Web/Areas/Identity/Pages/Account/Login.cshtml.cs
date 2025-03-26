@@ -117,7 +117,7 @@ namespace ASC.Web.Areas.Identity.Pages.Account
                 var user = await _userManager.FindByEmailAsync(Input.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tài khoản không tồn tại");
                     return Page();
                 }
 
@@ -125,7 +125,7 @@ namespace ASC.Web.Areas.Identity.Pages.Account
                 var isActive = Boolean.Parse(list.SingleOrDefault(p => p.Type == "IsActive").Value);
                 if (!isActive)
                 {
-                    ModelState.AddModelError(string.Empty, "Account has been locked.");
+                    ModelState.AddModelError(string.Empty, "Tài khoản của bạn đã bị khóa");
                     return Page();
                 }
 
@@ -136,7 +136,7 @@ namespace ASC.Web.Areas.Identity.Pages.Account
                     if (!String.IsNullOrWhiteSpace(returnUrl))
                         return RedirectToAction(returnUrl);
                     else
-                        return RedirectToAction("Dashboard", "Dashboard", new {area= "ServiceRequests"});
+                        return RedirectToAction("Dashboard", "Dashboard", new { area = "ServiceRequests" });
                 }
 
                 if (result.RequiresTwoFactor)
@@ -151,7 +151,7 @@ namespace ASC.Web.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Sai mật khẩu");
                     return Page();
                 }
             }
